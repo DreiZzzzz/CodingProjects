@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Hotel {
     private String hotelName;
@@ -9,6 +10,28 @@ public class Hotel {
         this.hotelName = hotelName;
         this.hotelRooms = new ArrayList<Room>(numRooms);
         this.reservationList = new ArrayList<Reservation>();
+        initializeHotelRooms(numRooms);
+    }
+
+    public void initializeHotelRooms(int numRooms) {
+        String temp = "A";
+
+        for (int i = 1; i <= numRooms; i++) {
+            hotelRooms.add(new Room(temp + i));
+        }
+    }
+
+    public boolean addHotelRooms(int numRooms) {
+        String temp = "A";
+        int totalRooms = numRooms + this.hotelRooms.size();
+
+        if (totalRooms <= 50) {
+            for (int i = this.hotelRooms.size() + 1; i <= totalRooms; i++) {
+                hotelRooms.add(new Room(temp + i));
+            }
+            return true ;
+        }
+        return false;
     }
 
     public String getHotelName() {
@@ -20,7 +43,24 @@ public class Hotel {
     }
 
     public ArrayList<Room> getHotelRooms() {
-        return hotelRooms;
+        return this.hotelRooms;
+    }
+
+    public void displayHotelRooms() {
+        StringBuilder hotelRooms = new StringBuilder();
+        int counter = 0;
+
+        for (int i = 0; i < this.hotelRooms.size(); i++) {
+            if (counter == 10) {
+                hotelRooms.append("\n");
+                counter = 0; // reset
+            }
+            hotelRooms.append(this.hotelRooms.get(i).getRoomName());
+            hotelRooms.append("\t\t");
+            counter++;
+        }
+        System.out.println("[CURRENT HOTEL ROOMS]");
+        System.out.println(hotelRooms);
     }
 
     public double getTotalEarnings() {
@@ -29,7 +69,6 @@ public class Hotel {
         for (int i = 0; i < reservationList.size(); i++) {
             totalEarnings += reservationList.get(i).getTotalPrice();
         }
-
         return totalEarnings;
     }
 }

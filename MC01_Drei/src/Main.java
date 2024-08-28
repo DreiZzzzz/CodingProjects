@@ -13,9 +13,9 @@ public class Main {
         do {
             while (true) {
                 displayOptions();
-                System.out.print("Please enter an integer option: ");
 
                 try {
+                    System.out.print("Please enter an integer option: ");
                     userOption = scanner.nextInt();
                     if (userOption >= 1 && userOption <= 5) {
                         break; // Exit the loop if input is valid and within range
@@ -161,15 +161,20 @@ public class Main {
         }
 
         while (!isNumValid) {
-            System.out.print("Enter number of rooms [1-50]: ");
-            numRooms = scanner.nextInt();
-
-            if (numRooms >= 1 && numRooms <= 50) {
-                isNumValid = true;
-            } else {
+            try {
+                System.out.print("Enter number of rooms [1-50]: ");
+                numRooms = scanner.nextInt();
+                if (numRooms >= 1 && numRooms <= 50) {
+                    isNumValid = true;
+                } else {
+                    System.out.println("Option out of range. Please enter 1 - 50.");
+                    printHyp();
+                }
+            } catch(InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a valid integer.");
+                printHyp();
+                scanner.next(); // Clear the invalid input from the scanner
             }
-            printHyp();
         }
 
         hotelList.add(new Hotel(hotelName, numRooms));
@@ -263,11 +268,15 @@ public class Main {
 
     public static void manageHotel(Scanner scanner) {
         int manageOptions = 0;
+        int hotelIndex = -1;
+        int numRooms = 0;
+        double newBasePrice = 0.0;
         boolean isValid = false;
         boolean isNameValid = false;
         String chosenHotel = "";
-        int hotelIndex = -1;
         String newHotelName = "";
+
+
 
         if (!(hotelList.isEmpty())) {
             displayHotelList();
@@ -276,7 +285,6 @@ public class Main {
             while(!isValid) {
                 System.out.print("\nHotel to manage: ");
                 chosenHotel = scanner.nextLine();
-                System.out.println(); // new line
 
                 if (!(isHotelNameValid(chosenHotel))) {
                     hotelIndex = getHotelIndex(chosenHotel);
@@ -296,7 +304,7 @@ public class Main {
                     System.out.println("(4) Update Base Price");
                     System.out.println("(5) Remove Reservation");
                     System.out.println("(6) Delete Hotel");
-                    System.out.println("(7) Main Menu");
+                    System.out.println("(7) Main Menu\n");
                     try {
                         System.out.print("Please enter an integer option: ");
                         manageOptions = scanner.nextInt();
@@ -334,13 +342,57 @@ public class Main {
                         hotelList.get(hotelIndex).setHotelName(newHotelName);
                         break;
                     case 2:
-                        System.out.println("-- ADDING HOTEL ROOM(S) --");
+                        if (hotelList.get(hotelIndex).getHotelRooms().size() < 50) {
+                            System.out.println("-- ADDING HOTEL ROOM(S) --\n");
+
+                            while (true) {
+                                try {
+                                    System.out.println("Current Hotel Rooms: " + hotelList.get(hotelIndex).getHotelRooms().size());
+                                    System.out.print("Rooms To Add: ");
+                                    numRooms = scanner.nextInt();
+                                    System.out.println();
+                                    if (numRooms >= 1 && numRooms + hotelList.get(hotelIndex).getHotelRooms().size() <= 50) {
+                                        hotelList.get(hotelIndex).addHotelRooms(numRooms);
+                                        break; // Exit the loop if input is valid and within range
+                                    }
+                                } catch (InputMismatchException e) {
+                                    System.out.println("Invalid input. Please enter a valid integer.");
+                                    printHyp();
+                                    scanner.next(); // Clear the invalid input from the scanner
+                                }
+                            }
+                        } else {
+                            System.out.println("WARNING: Already Reached Maximum Of 50 Rooms.");
+                        }
                         break;
                     case 3:
-                        System.out.println("-- REMOVING HOTEL ROOM --");
+                        System.out.println("-- REMOVING HOTEL ROOM --\n");
+
+                        // display hotel room names
+                        hotelList.get(hotelIndex).displayHotelRooms();
                         break;
                     case 4:
                         System.out.println("-- UPDATING BASE PRICE --");
+
+                        while (true) {
+                            try {
+                                System.out.print("Enter new base price: ");
+                                newBasePrice = scanner.nextDouble();
+                                if (newBasePrice >= 100) {
+                                    for (int i = 0; i < hotelList.get(hotelIndex).getHotelRooms().size(); i++) {
+                                        hotelList.get(hotelIndex).getHotelRooms().get(i).setPricePerNight(newBasePrice);
+                                    }
+                                    break;
+                                }
+                            } catch (InputMismatchException e) {
+                                System.out.println("Invalid input. Please enter a price >= 100.");
+                                printHyp();
+                                scanner.next(); // Clear the invalid input from the scanner
+                            }
+                        }
+
+                        // check if base price updates
+
                         break;
                     case 5:
                         System.out.println("-- REMOVING RESERVATION --");

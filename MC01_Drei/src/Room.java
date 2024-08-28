@@ -1,5 +1,5 @@
 public class Room {
-    private String roomName;
+    private final String roomName;
     private double pricePerNight;
 
 
@@ -15,5 +15,10 @@ public class Room {
 
     public double getPricePerNight() {
         return pricePerNight;
+    }
+
+
+    public String getRoomName() {
+        return this.roomName;
     }
 }
