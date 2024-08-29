@@ -43,7 +43,7 @@ public class Main {
                     break;
                 case 3:
                     printHyp();
-                    System.out.println("!! [MANAGE HOTEL] !!");
+                    System.out.println("!! [MANAGE HOTEL] !!\n");
                     manageHotel(scanner);
                     break;
                 case 4:
@@ -110,12 +110,11 @@ public class Main {
         return true;
     }
 
-
     /**
      *
      */
     public static void displayHotelList() {
-        System.out.println("-- HOTEL LIST --");
+        System.out.println("\n-- HOTEL LIST --");
         for (int i = 0; i < hotelList.size(); i++) {
             System.out.println(hotelList.get(i).getHotelName());
         }
@@ -128,7 +127,6 @@ public class Main {
                 return i; // hotel index
             }
         }
-
         return -1;
     }
 
@@ -181,8 +179,6 @@ public class Main {
         System.out.println("!!SUCCESSFULLY CREATED [HOTEL " + hotelName + "] WITH " + numRooms + " ROOMS!!\n");
         displayHotelList();
         printHyp();
-
-
     }
 
     public static void viewHotel(Scanner scanner) {
@@ -273,9 +269,11 @@ public class Main {
         double newBasePrice = 0.0;
         boolean isValid = false;
         boolean isNameValid = false;
+        boolean isRoomValid;
         String chosenHotel = "";
         String newHotelName = "";
-
+        String roomName;
+        String deleteHotel = "";
 
 
         if (!(hotelList.isEmpty())) {
@@ -332,7 +330,7 @@ public class Main {
                             newHotelName = scanner.nextLine();
                             System.out.println();
                             if (isHotelNameValid(newHotelName)) {
-                                System.out.println("PROMPT: Name Change Success!");
+                                System.out.println("PROMPT: Hotel Name Change Success!");
                                 isNameValid = true;
                                 chosenHotel = newHotelName;
                             } else {
@@ -353,6 +351,7 @@ public class Main {
                                     System.out.println();
                                     if (numRooms >= 1 && numRooms + hotelList.get(hotelIndex).getHotelRooms().size() <= 50) {
                                         hotelList.get(hotelIndex).addHotelRooms(numRooms);
+                                        System.out.println("PROMPT: Room Addition Success!");
                                         break; // Exit the loop if input is valid and within range
                                     }
                                 } catch (InputMismatchException e) {
@@ -367,12 +366,26 @@ public class Main {
                         break;
                     case 3:
                         System.out.println("-- REMOVING HOTEL ROOM --\n");
+                        scanner.nextLine(); // buffer
+                        hotelList.get(hotelIndex).displayHotelRooms(); // display list of hotel rooms
+                        isRoomValid = false;
+                        while (!(isRoomValid)) {
+                            System.out.print("Enter room to delete: ");
+                            roomName = scanner.nextLine();
+                            if(hotelList.get(hotelIndex).isRoomValid(roomName)) {
+                                hotelList.get(hotelIndex).removeRoom(hotelList.get(hotelIndex).getRoomIndex(roomName));
+                                System.out.println("PROMPT: Room Removal Success!");
+                                isRoomValid = true;
+                            }
+                            System.out.println(); // newline
+                        }
 
-                        // display hotel room names
-                        hotelList.get(hotelIndex).displayHotelRooms();
+                        System.out.println("\n[UPDATED LIST OF ROOMS]");
+                        hotelList.get(hotelIndex).displayHotelRooms(); // display list of hotel rooms
+
                         break;
-                    case 4:
-                        System.out.println("-- UPDATING BASE PRICE --");
+                    case 4: // check if base price updates
+                        System.out.println("-- UPDATING BASE PRICE --\n");
 
                         while (true) {
                             try {
@@ -382,6 +395,7 @@ public class Main {
                                     for (int i = 0; i < hotelList.get(hotelIndex).getHotelRooms().size(); i++) {
                                         hotelList.get(hotelIndex).getHotelRooms().get(i).setPricePerNight(newBasePrice);
                                     }
+                                    System.out.println("PROMPT: Base Price Update Success!");
                                     break;
                                 }
                             } catch (InputMismatchException e) {
@@ -390,15 +404,31 @@ public class Main {
                                 scanner.next(); // Clear the invalid input from the scanner
                             }
                         }
-
-                        // check if base price updates
-
                         break;
                     case 5:
                         System.out.println("-- REMOVING RESERVATION --");
+                        // display reservation list? optional
+                        // name
+                        // check-in date
+                        // check-out date
                         break;
                     case 6:
                         System.out.println("-- DELETING HOTEL");
+
+                        System.out.print("Delete Hotel [Y / N]: ");
+                        scanner.nextLine(); // buffer
+                        deleteHotel = scanner.nextLine();
+
+                        if (deleteHotel.equals("Y") || deleteHotel.equals("y")) {
+                            manageOptions = 7;
+                            System.out.println("PROMPT: Hotel Deletion Success!");
+                            hotelList.remove(hotelIndex);
+                        } else if (deleteHotel.equals("N") || deleteHotel.equals("n")) {
+                            System.out.println("PROMPT: Hotel Deletion Cancelled!");
+                        } else {
+                            System.out.println("WARNING: Invalid Input!");
+                        }
+                        printHyp();
                         break;
                 }
             } while (manageOptions != 7);
@@ -409,16 +439,23 @@ public class Main {
     }
 
     public static void simulateBooking(Scanner scanner) {
+        String chosenHotel;
+        String customerName;
+        int checkInDay;
+        int checkOutDay;
+
         if (!(hotelList.isEmpty())) {
-            /*
-                code here ---
-            */
+            customerName = "";
+            checkInDay = -1;
+            checkOutDay = -1;
+
+
+
         } else {
             System.out.println("WARNING: No Hotel(s) Found");
             printHyp();
         }
 
     }
-
 
 }

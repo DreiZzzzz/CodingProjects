@@ -59,7 +59,7 @@ public class Hotel {
             hotelRooms.append("\t\t");
             counter++;
         }
-        System.out.println("[CURRENT HOTEL ROOMS]");
+        System.out.println("CURRENT HOTEL ROOMS: " + this.hotelRooms.size());
         System.out.println(hotelRooms);
     }
 
@@ -70,5 +70,27 @@ public class Hotel {
             totalEarnings += reservationList.get(i).getTotalPrice();
         }
         return totalEarnings;
+    }
+
+    public boolean isRoomValid(String roomName) {
+        for (int i = 0; i < this.hotelRooms.size(); i++) {
+            if (this.hotelRooms.get(i).getRoomName().equals(roomName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getRoomIndex(String roomName) {
+        for (int i = 0; i < this.hotelRooms.size(); i++) {
+            if (this.hotelRooms.get(i).getRoomName().equals(roomName)) {
+                return i; // return index where room is found
+            }
+        }
+        return -1; // if room is not found
+    }
+
+    public void removeRoom(int roomIndex) {
+        this.hotelRooms.remove(roomIndex);
     }
 }
