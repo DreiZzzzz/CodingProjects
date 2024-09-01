@@ -2,6 +2,10 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+/**
+ *  To do:
+ *  1. Fix hotel room
+ */
 public class Main {
     private static ArrayList<Hotel> hotelList = new ArrayList<>();
 
@@ -248,11 +252,13 @@ public class Main {
                     }
                 }
 
-
+                /*
                 switch(lowLevelOption) {
                     case 1:
                         break;
                 }
+
+                */
 
             }
         } else {
@@ -440,22 +446,127 @@ public class Main {
 
     public static void simulateBooking(Scanner scanner) {
         String chosenHotel;
-        String customerName;
-        int checkInDay;
-        int checkOutDay;
+        String chosenRoom;
+        String guestName; //
+        int checkInDay; //
+        int checkOutDay; //
+        int hotelIndex;
+        int roomIndex;
+        int reservationIndex;
+
+        boolean isHotelValid;
+
+        // to use
+        boolean isRoomValid;
+        boolean isDateValid;
+        boolean isInValid;
+        boolean isOutValid;
+
 
         if (!(hotelList.isEmpty())) {
-            customerName = "";
-            checkInDay = -1;
-            checkOutDay = -1;
+            displayHotelList();
+            isHotelValid = false;
+            hotelIndex = -1;
 
+            while(!isHotelValid) {
+                chosenHotel = "";
+                System.out.print("\nHotel Choice: ");
+                scanner.nextLine(); // buffer
+                chosenHotel = scanner.nextLine();
 
+                if (!(isHotelNameValid(chosenHotel))) {
+                    hotelIndex = getHotelIndex(chosenHotel);
+                    isHotelValid = true;
+                } else {
+                    System.out.println("WARNING: Hotel Does Not Exist.");
+                    scanner.next(); // Clear the invalid input from the scanner
+                }
+            }
+            printHyp();
+
+            System.out.println("Booking @Hotel " + hotelList.get(hotelIndex).getHotelName() + "\n");
+
+            // display room
+            hotelList.get(hotelIndex).displayHotelRooms();
+
+            // for the room input - edit
+            isRoomValid = false;
+            roomIndex = -1;
+            while(!isRoomValid) {
+                try {
+                    System.out.print("Selected Room: ");
+                    chosenRoom = scanner.nextLine();
+                    System.out.println(); // newline
+                    if (hotelList.get(hotelIndex).isRoomValid(chosenRoom)) {
+                        roomIndex = hotelList.get(hotelIndex).getRoomIndex(chosenRoom);
+                        isRoomValid = true;
+                    } else {
+                        System.out.println("WARNING: Room Does Not Exist.");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input.");
+                }
+                printHyp();
+            }
+
+            System.out.println("Guest Information");
+            guestName = "";
+            System.out.print("Guest name: ");
+            guestName = scanner.nextLine();
+
+            do {
+                isDateValid = false;
+                isInValid = false;
+                checkInDay = -1;
+                while (!isInValid) {
+                    try {
+                        System.out.print("Check-in day: ");
+                        checkInDay = scanner.nextInt();
+                        if (checkInDay >= 1 && checkInDay <= 30) {
+                            isInValid = true;
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input. Please enter a new day.");
+                        printHyp();
+                        scanner.next(); // Clear the invalid input from the scanner
+                    }
+                }
+
+                isOutValid = false;
+                checkOutDay = -1;
+                while (!isOutValid) {
+                    try {
+                        System.out.print("\nCheck-out day: ");
+                        checkOutDay = scanner.nextInt();
+                        if (checkOutDay > checkInDay && checkOutDay <= 31) {
+                            isOutValid = true;
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input. Please enter a new day.");
+                        printHyp();
+                        scanner.next(); // Clear the invalid input from the scanner
+                    }
+                }
+
+                reservationIndex = -1;
+                if (hotelList.get(hotelIndex).isReservationValid(roomIndex, checkInDay, checkOutDay)) {
+                    isDateValid = true;
+                    Room roomInfo = hotelList.get(hotelIndex).getHotelRooms().get(roomIndex);
+
+                    hotelList.get(hotelIndex).getHotelRooms().get(roomIndex).updateDayStatus(checkInDay, checkOutDay, true);
+                    hotelList.get(hotelIndex).makeReservation(guestName, checkInDay, checkOutDay, roomInfo);
+
+                    printHyp();
+                    reservationIndex = hotelList.get(hotelIndex).getReservationIndex(guestName, checkInDay, checkOutDay);
+                    hotelList.get(hotelIndex).getReservationList().get(reservationIndex).getReservationInfo();
+                }
+
+            } while(isDateValid != true);
 
         } else {
             System.out.println("WARNING: No Hotel(s) Found");
-            printHyp();
         }
-
+        printHyp();
     }
 
 }

@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Hotel {
     private String hotelName;
@@ -21,6 +20,25 @@ public class Hotel {
         }
     }
 
+    public int getReservationIndex(String guestName, int checkIn, int checkOut) {
+        for (int i = 0; i < this.reservationList.size(); i++) {
+            if     (this.reservationList.get(i).getGuestName().equals(guestName)
+                    && this.reservationList.get(i).getCheckInDate() == checkIn
+                    && this.reservationList.get(i).getCheckOutDate() == checkOut) {
+                    return i;
+             }
+        }
+
+        return -1; // not found
+    }
+
+
+
+    public ArrayList<Reservation> getReservationList() {
+        return this.reservationList;
+    }
+
+    // fix room naming
     public boolean addHotelRooms(int numRooms) {
         String temp = "A";
         int totalRooms = numRooms + this.hotelRooms.size();
@@ -35,7 +53,7 @@ public class Hotel {
     }
 
     public String getHotelName() {
-        return hotelName;
+        return this.hotelName;
     }
 
     public void setHotelName(String hotelName) {
@@ -92,5 +110,35 @@ public class Hotel {
 
     public void removeRoom(int roomIndex) {
         this.hotelRooms.remove(roomIndex);
+    }
+
+    public void roomMonthStatus(int roomIndex) {
+        for (int i = 0; i < 31; i++) {
+            this.hotelRooms.get(roomIndex).roomDayStatus(i);
+        }
+    }
+
+    // true means book, otherwise false
+    public boolean isReservationValid(int roomIndex, int checkInDay, int checkOutDay) {
+        int ctr = 0;
+
+        boolean isInValid;
+        boolean isOutValid;
+
+        for (int i = checkInDay - 1; i < checkOutDay - 1; i++) {
+            if (this.hotelRooms.get(roomIndex).getDayStatus(i)) {
+                ctr++;
+            }
+        }
+
+        if (ctr >= 0 && ctr < 2) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void makeReservation(String guestName, int checkInDate, int checkOutDate, Room roomInfo) {
+        this.reservationList.add(new Reservation(guestName, checkInDate, checkOutDate, roomInfo));
     }
 }
