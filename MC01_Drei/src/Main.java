@@ -135,9 +135,11 @@ public class Main {
     }
 
     public static void highLevelInfo(int hotelIndex) {
+        printHyp();
         System.out.println("Hotel Name: " + hotelList.get(hotelIndex).getHotelName());
         System.out.println("Total Rooms: " + hotelList.get(hotelIndex).getHotelRooms().size());
         System.out.println("Estimated Earnings: " + hotelList.get(hotelIndex).getTotalEarnings());
+        printHyp();
     }
 
     public static void createHotel(Scanner scanner) {
@@ -188,13 +190,26 @@ public class Main {
     public static void viewHotel(Scanner scanner) {
         int viewOptions;
         int lowLevelOption;
-        boolean isValid = false;
+        int hotelIndex;
+        int selectedDate;
+        int roomIndex;
+        boolean isValid;
+        boolean isDateValid;
         String chosenHotel = "";
+        String chosenRoom;
+        boolean isRoomNameValid;
+
+        String guestName;
+        int checkInDay;
+        int checkOutDay;
 
         if (!(hotelList.isEmpty())) {
+            roomIndex = -1;
+            chosenRoom = "";
             displayHotelList();
             scanner.nextLine(); // buffer
-
+            hotelIndex = -1;
+            isValid = false;
             while (!isValid) {
                 System.out.print("Hotel to view: ");
                 chosenHotel = scanner.nextLine();
@@ -202,12 +217,14 @@ public class Main {
 
                 if (!(isHotelNameValid(chosenHotel))) {
                     isValid = true;
+                    hotelIndex = getHotelIndex(chosenHotel);
                 } else {
                     System.out.println("Hotel does not exist.");
                 }
             }
 
             while (true) {
+                printHyp();
                 System.out.println("!! [VIEW HOTEL OPTIONS] !! ");
                 System.out.println("(1) HIGH-LEVEL INFORMATION");
                 System.out.println("(2) LOW-LEVEL INFORMATION");
@@ -252,21 +269,102 @@ public class Main {
                     }
                 }
 
-                /*
                 switch(lowLevelOption) {
                     case 1:
+                        printHyp();
+                        System.out.println("AVAILABLE ROOMS FOR A SELECT DATE");
+
+                        selectedDate = -1;
+                        isDateValid = false;
+                        while (!isDateValid) {
+                            try {
+                                System.out.println("Enter day to view: ");
+                                selectedDate = scanner.nextInt();
+                                if (selectedDate >= 1 && selectedDate <= 31) {
+                                    isDateValid = true;
+                                } else {
+                                    System.out.println("Option out of range. Please enter 1 - 31.");
+                                }
+                            } catch (InputMismatchException e) {
+                                System.out.println("Invalid input. Please enter a valid integer.");
+                                scanner.next(); // Clear the invalid input from the scanner
+                            }
+                            printHyp();
+                        }
+                        // func call here
+                        printHyp();
+                        hotelList.get(hotelIndex).getAvailableRooms(selectedDate);
+
+                        break;
+                    case 2:
+                        printHyp();
+                        System.out.println("SELECT ROOM INFORMATION");
+                        isRoomNameValid = false;
+                        while(!isRoomNameValid) {
+                            hotelList.get(hotelIndex).displayHotelRooms();
+                            System.out.print("Enter room to view: ");
+                            scanner.nextLine(); // buffer - edit
+                            chosenRoom = scanner.nextLine();
+                            if (hotelList.get(hotelIndex).isRoomValid(chosenRoom)) {
+                                roomIndex = hotelList.get(hotelIndex).getRoomIndex(chosenRoom);
+                                isRoomNameValid = true;
+                            } else {
+                                System.out.println("WARNING: Room Does Not Exist!");
+                            }
+                        }
+                        System.out.println("Room name: " + hotelList.get(hotelIndex).getHotelRooms().get(roomIndex).getRoomName());
+                        System.out.println("Price Per Night: " + hotelList.get(hotelIndex).getHotelRooms().get(roomIndex).getPricePerNight());
+                        hotelList.get(hotelIndex).getHotelRooms().get(roomIndex).monthDayStatus(); // this is a loop
+                        break;
+                    case 3:
+                        printHyp();
+                        System.out.println("SELECT RESERVATION INFORMATION");
+
+                        System.out.print("Guest Name: ");
+                        scanner.nextLine(); // buffer -edit
+
+                        // FIX ME
+                        checkInDay = -1;
+                        while (true) {
+                            try {
+                                System.out.print("Check-In Day: ");
+                                checkInDay = scanner.nextInt();
+                                System.out.println();
+                                if (checkInDay >= 1 && checkInDay <= 30) {
+                                    break;
+                                } else {
+                                    System.out.println();
+                                }
+                            } catch (InputMismatchException e) {
+                                System.out.println("Invalid input. Please enter a valid integer.");
+                                printHyp();
+                                scanner.next(); // Clear the invalid input from the scanner
+                            }
+                        }
+
+                        checkOutDay = -1;
+                        while (true) {
+                            try {
+                                System.out.print("Check-Out Day");
+                                checkInDay = scanner.nextInt();
+                                System.out.println();
+                                if (checkOutDay > checkInDay && checkOutDay <= 31) {
+                                    break;
+                                }
+                            } catch (InputMismatchException e) {
+                                System.out.println("Invalid input. Please enter a valid integer.");
+                                printHyp();
+                                scanner.next(); // Clear the invalid input from the scanner
+                            }
+                        }
                         break;
                 }
-
-                */
-
             }
         } else {
             System.out.println("WARNING: No Hotel(s) Found");
             printHyp();
         }
     }
-
 
     public static void manageHotel(Scanner scanner) {
         int manageOptions = 0;
@@ -280,7 +378,6 @@ public class Main {
         String newHotelName = "";
         String roomName;
         String deleteHotel = "";
-
 
         if (!(hotelList.isEmpty())) {
             displayHotelList();
@@ -469,16 +566,17 @@ public class Main {
             hotelIndex = -1;
 
             while(!isHotelValid) {
-                chosenHotel = "";
-                System.out.print("\nHotel Choice: ");
+                chosenHotel = null;
+                System.out.print("Hotel Choice: ");
                 scanner.nextLine(); // buffer
                 chosenHotel = scanner.nextLine();
-
+                System.out.println();
                 if (!(isHotelNameValid(chosenHotel))) {
                     hotelIndex = getHotelIndex(chosenHotel);
                     isHotelValid = true;
                 } else {
                     System.out.println("WARNING: Hotel Does Not Exist.");
+                    System.out.println("Enter any key to select again.");
                     scanner.next(); // Clear the invalid input from the scanner
                 }
             }
@@ -508,6 +606,9 @@ public class Main {
                 }
                 printHyp();
             }
+
+            hotelList.get(hotelIndex).getHotelRooms().get(roomIndex).monthDayStatus();
+            printHyp();
 
             System.out.println("Guest Information");
             guestName = "";
@@ -548,20 +649,24 @@ public class Main {
                     }
                 }
 
-                reservationIndex = -1;
+
                 if (hotelList.get(hotelIndex).isReservationValid(roomIndex, checkInDay, checkOutDay)) {
+                    reservationIndex = -1;
                     isDateValid = true;
-                    Room roomInfo = hotelList.get(hotelIndex).getHotelRooms().get(roomIndex);
-
-                    hotelList.get(hotelIndex).getHotelRooms().get(roomIndex).updateDayStatus(checkInDay, checkOutDay, true);
-                    hotelList.get(hotelIndex).makeReservation(guestName, checkInDay, checkOutDay, roomInfo);
-
-                    printHyp();
-                    reservationIndex = hotelList.get(hotelIndex).getReservationIndex(guestName, checkInDay, checkOutDay);
-                    hotelList.get(hotelIndex).getReservationList().get(reservationIndex).getReservationInfo();
                 }
 
             } while(isDateValid != true);
+
+            if (isDateValid) {
+                Room roomInfo = hotelList.get(hotelIndex).getHotelRooms().get(roomIndex);
+
+                hotelList.get(hotelIndex).getHotelRooms().get(roomIndex).updateDayStatus(checkInDay, checkOutDay, true);
+                hotelList.get(hotelIndex).makeReservation(guestName, checkInDay, checkOutDay, roomInfo);
+
+                printHyp();
+                reservationIndex = hotelList.get(hotelIndex).getReservationIndex(guestName, checkInDay, checkOutDay);
+                hotelList.get(hotelIndex).getReservationList().get(reservationIndex).getReservationInfo();
+            }
 
         } else {
             System.out.println("WARNING: No Hotel(s) Found");

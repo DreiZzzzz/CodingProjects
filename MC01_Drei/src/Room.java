@@ -35,11 +35,17 @@ public class Room {
         }
     }
 
-    public void roomDayStatus(int dayIndex) {
-        if (dayStatus[dayIndex]) {
-            System.out.println("Day " + dayIndex + ": booked");
+    public void roomDayStatus(int day) {
+        if (dayStatus[day - 1]) {
+            System.out.println("Day " + day + ": booked");
         } else {
-            System.out.println("Day " + dayIndex + ": available");
+            System.out.println("Day " + day + ": available");
+        }
+    }
+
+    public void monthDayStatus() {
+        for (int i = 1; i <= 31; i++) {
+            roomDayStatus(i);
         }
     }
 

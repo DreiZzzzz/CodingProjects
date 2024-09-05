@@ -56,12 +56,44 @@ public class Hotel {
         return this.hotelName;
     }
 
+    // true => book
+    // false => available
+    public void getAvailableRooms(int selectedDay) {
+        int ctrBooked = 0;
+        int ctrAvailable = 0;
+
+        for (int i = 0; i < this.hotelRooms.size(); i++) {
+            if (this.hotelRooms.get(i).getDayStatus(selectedDay - 1)) {
+                ctrBooked++;
+            } else {
+                ctrAvailable++;
+            }
+        }
+
+
+        System.out.println("Available Rooms: " + ctrAvailable);
+        System.out.println("Booked Rooms: " + ctrBooked);
+    }
+
     public void setHotelName(String hotelName) {
         this.hotelName = hotelName;
     }
 
     public ArrayList<Room> getHotelRooms() {
         return this.hotelRooms;
+    }
+
+    public boolean isReservationValid(String guestName, int checkInDay, int checkOutDay){
+
+        for (int i = 0; i < this.reservationList.size(); i++) {
+            if (this.reservationList.get(i).getGuestName().equals(guestName)) {
+                if (this.reservationList.get(i).getCheckInDate() == checkInDay && checkOutDay == this.reservationList.get(i).getCheckOutDate()) {
+                    return true;
+                }
+            }
+        }
+
+        return false; // reservation does not exist
     }
 
     public void displayHotelRooms() {
